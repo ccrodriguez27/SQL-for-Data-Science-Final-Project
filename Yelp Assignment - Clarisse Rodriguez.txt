@@ -1,0 +1,758 @@
+Data Scientist Role Play: Profiling and Analyzing the Yelp Dataset Coursera Worksheet
+
+This is a 2-part assignment. In the first part, you are asked a series of questions that will help you profile and understand the data just like a data scientist would. For this first part of the assignment, you will be assessed both on the correctness of your findings, as well as the code you used to arrive at your answer. You will be graded on how easy your code is to read, so remember to use proper formatting and comments where necessary.
+
+In the second part of the assignment, you are asked to come up with your own inferences and analysis of the data for a particular research question you want to answer. You will be required to prepare the dataset for the analysis you choose to do. As with the first part, you will be graded, in part, on how easy your code is to read, so use proper formatting and comments to illustrate and communicate your intent as required.
+
+For both parts of this assignment, use this "worksheet." It provides all the questions you are being asked, and your job will be to transfer your answers and SQL coding where indicated into this worksheet so that your peers can review your work. You should be able to use any Text Editor (Windows Notepad, Apple TextEdit, Notepad ++, Sublime Text, etc.) to copy and paste your answers. If you are going to use Word or some other page layout application, just be careful to make sure your answers and code are lined appropriately.
+In this case, you may want to save as a PDF to ensure your formatting remains intact for you reviewer.
+
+
+
+Part 1: Yelp Dataset Profiling and Understanding
+
+1. Profile the data by finding the total number of records for each of the tables below:
+	
+i. Attribute table = 10000
+ii. Business table = 10000
+iii. Category table = 10000
+iv. Checkin table = 10000
+v. elite_years table = 10000
+vi. friend table = 10000
+vii. hours table = 10000
+viii. photo table = 10000
+ix. review table = 10000
+x. tip table = 10000
+xi. user table = 10000
+	
+
+
+2. Find the total distinct records by either the foreign key or primary key for each table. 
+If two foreign keys are listed in the table, please specify which foreign key.
+
+i. Business = 10000 (primary key: id)
+ii. Hours = 1562 (foreign key: business_id)
+iii. Category = 2643 (foreign key: business_id)
+iv. Attribute = 1115 (foreign key: business_id)
+v. Review = 10000 (primary key: id), 8090 (foreign key: business_id), 9581 (foreign key: user_id)
+vi. Checkin = 493 (foreign key: business_id)
+vii. Photo = 10000 (primary key: id), 6493 (foreign key: business_id)
+viii. Tip = 3979 (foregin key: business_id), 537 (foreign key: user_id)
+ix. User = 10000 (primary key)
+x. Friend = 11 (foreign key: friend_id)
+xi. Elite_years = 2780 (foreign key: user_id)
+
+Note: Primary Keys are denoted in the ER-Diagram with a yellow key icon.	
+
+
+
+3. Are there any columns with null values in the Users table? Indicate "yes," or "no."
+
+	Answer: No.
+	
+	
+	SQL code used to arrive at answer: 
+	
+	SELECT 
+	SUM(CASE WHEN id IS NULL THEN 1 ELSE 0 END) as id_NULL
+	, SUM(CASE WHEN name IS NULL THEN 1 ELSE 0 END) as name_NULL
+	, SUM(CASE WHEN review_count IS NULL THEN 1 ELSE 0 END) as reviewCount_NULL
+	, SUM(CASE WHEN yelping_since IS NULL THEN 1 ELSE 0 END) as yelpingSince_NULL
+	, SUM(CASE WHEN useful IS NULL THEN 1 ELSE 0 END) as useful_NULL
+	, SUM(CASE WHEN funny IS NULL THEN 1 ELSE 0 END) as funny_NULL
+	, SUM(CASE WHEN cool IS NULL THEN 1 ELSE 0 END) as cool_NULL
+	, SUM(CASE WHEN fans IS NULL THEN 1 ELSE 0 END) as fans_NULL
+	, SUM(CASE WHEN average_stars IS NULL THEN 1 ELSE 0 END) as averageStars_NULL
+	, SUM(CASE WHEN compliment_hot IS NULL THEN 1 ELSE 0 END) as cHot_NULL
+	, SUM(CASE WHEN compliment_more IS NULL THEN 1 ELSE 0 END) as cMore_NULL
+	, SUM(CASE WHEN compliment_profile IS NULL THEN 1 ELSE 0 END) as cProfile_NULL
+	, SUM(CASE WHEN compliment_cute IS NULL THEN 1 ELSE 0 END) as cCute_NULL
+	, SUM(CASE WHEN compliment_list IS NULL THEN 1 ELSE 0 END) as cList_NULL
+	, SUM(CASE WHEN compliment_note IS NULL THEN 1 ELSE 0 END) as cNote_NULL
+	, SUM(CASE WHEN compliment_plain IS NULL THEN 1 ELSE 0 END) as cPlain_NULL
+	, SUM(CASE WHEN compliment_cool IS NULL THEN 1 ELSE 0 END) as cCool_NULL
+	, SUM(CASE WHEN compliment_funny IS NULL THEN 1 ELSE 0 END) as cFunny_NULL
+	, SUM(CASE WHEN compliment_writer IS NULL THEN 1 ELSE 0 END) as cWriter_NULL
+	, SUM(CASE WHEN compliment_photos IS NULL THEN 1 ELSE 0 END) as cPhotos_NULL
+	FROM user;
+	
+	
+
+	
+4. For each table and column listed below, display the smallest (minimum), largest (maximum), and average (mean) value for the following fields:
+
+	i. Table: Review, Column: Stars
+	
+		min:	1	max:	5	avg:  3.7082
+		
+	
+	ii. Table: Business, Column: Stars
+	
+		min: 1.0	max: 5.0	avg:  3.6549
+		
+	
+	iii. Table: Tip, Column: Likes
+	
+		min:	0	max:	2	avg: 0.0144
+		
+	
+	iv. Table: Checkin, Column: Count
+	
+		min:	1	max:	53	avg: 1.9414
+		
+	
+	v. Table: User, Column: Review_count
+	
+		min:	0	max:	2000	avg: 24.2995
+		
+
+
+5. List the cities with the most reviews in descending order:
+
+	SQL code used to arrive at answer:
+	
+	SELECT DISTINCT 
+	b.city
+	, SUM(b.review_count) AS totalReviews
+	FROM business b
+	GROUP BY b.city
+	ORDER BY totalReviews DESC;
+	
+	Copy and Paste the Result Below:
+	
+	+-----------------+--------------+
+	| city            | totalReviews |
+	+-----------------+--------------+
+	| Las Vegas       |        82854 |
+	| Phoenix         |        34503 |
+	| Toronto         |        24113 |
+	| Scottsdale      |        20614 |
+	| Charlotte       |        12523 |
+	| Henderson       |        10871 |
+	| Tempe           |        10504 |
+	| Pittsburgh      |         9798 |
+	| Montréal        |         9448 |
+	| Chandler        |         8112 |
+	| Mesa            |         6875 |
+	| Gilbert         |         6380 |
+	| Cleveland       |         5593 |
+	| Madison         |         5265 |
+	| Glendale        |         4406 |
+	| Mississauga     |         3814 |
+	| Edinburgh       |         2792 |
+	| Peoria          |         2624 |
+	| North Las Vegas |         2438 |
+	| Markham         |         2352 |
+	| Champaign       |         2029 |
+	| Stuttgart       |         1849 |
+	| Surprise        |         1520 |
+	| Lakewood        |         1465 |
+	| Goodyear        |         1155 |
+	+-----------------+--------------+
+	(Output limit exceeded, 25 of 362 total rows shown)
+
+	
+6. Find the distribution of star ratings to the business in the following cities:
+
+i. Avon
+
+SQL code used to arrive at answer:
+
+	SELECT DISTINCT
+	stars AS starRating
+	, count(stars) AS Count
+	FROM business
+	WHERE city = 'Avon'
+	GROUP BY stars;
+
+
+Copy and Paste the Resulting Table Below (2 columns â€“ star rating and count):
+
+	+------------+-------+
+	| starRating | Count |
+	+------------+-------+
+	|        1.5 |     1 |
+	|        2.5 |     2 |
+	|        3.5 |     3 |
+	|        4.0 |     2 |
+	|        4.5 |     1 |
+	|        5.0 |     1 |
+	+------------+-------+
+
+ii. Beachwood
+
+SQL code used to arrive at answer:
+
+	SELECT DISTINCT
+	stars AS starRating
+	, count(stars) AS Count
+	FROM business
+	WHERE city = 'Beachwood'
+	GROUP BY stars;
+
+
+Copy and Paste the Resulting Table Below (2 columns â€“ star rating and count):
+		
+	+------------+-------+
+	| starRating | Count |
+	+------------+-------+
+	|        2.0 |     1 |
+	|        2.5 |     1 |
+	|        3.0 |     2 |
+	|        3.5 |     2 |
+	|        4.0 |     1 |
+	|        4.5 |     2 |
+	|        5.0 |     5 |
+	+------------+-------+
+
+
+7. Find the top 3 users based on their total number of reviews:
+		
+	SQL code used to arrive at answer:
+	
+	SELECT DISTINCT 
+	name
+	, review_count
+	FROM user
+	ORDER BY review_count DESC
+	LIMIT 3;
+		
+	Copy and Paste the Result Below:
+	
+	+--------+--------------+
+	| name   | review_count |
+	+--------+--------------+
+	| Gerald |         2000 |
+	| Sara   |         1629 |
+	| Yuri   |         1339 |
+	+--------+--------------+
+
+
+8. Does posing more reviews correlate with more fans?
+
+	Please explain your findings and interpretation of the results:
+	
+	SQL Code 1: Calculate the avg, min, and max to create categories. 
+	
+		SELECT DISTINCT 
+		MAX(review_count) AS maxReview
+		, AVG(review_count) AS avgReview
+		, MIN(review_count) AS minReview
+		, MAX(fans) AS maxFans
+		, AVG(fans) AS avgFans
+		, MIN(fans) AS minFans
+		FROM user
+		;
+		
+	Output 1: 
+	
+	+-----------+-----------+-----------+---------+---------+---------+
+	| maxReview | avgReview | minReview | maxFans | avgFans | minFans |
+	+-----------+-----------+-----------+---------+---------+---------+
+	|      2000 |   24.2995 |         0 |     503 |  1.4896 |       0 |
+	+-----------+-----------+-----------+---------+---------+---------+	
+
+	SQL Code 2: Create categories and cross-tabulate. 
+	
+	SELECT 
+	CASE 
+		WHEN review_count >= 0 and review_count <= 100 THEN '0-100'
+		WHEN review_count >= 101 and review_count <= 200 THEN '101-200'
+		WHEN review_count >= 201 and review_count <= 300 THEN '201-300'
+		WHEN review_count >= 301 and review_count <= 400 THEN '301-400'
+		WHEN review_count >= 401 and review_count <= 500 THEN '401-500'
+		ELSE 'More than 500'
+		END reviewCountCategory
+	, AVG(fans) AS AvgNumberOfFans
+	, COUNT(DISTINCT id) AS UserCount
+	FROM user
+	GROUP BY reviewCountCategory;
+	
+	Output 2: 
+	
+	+---------------------+-----------------+-----------+
+	| reviewCountCategory | AvgNumberOfFans | UserCount |
+	+---------------------+-----------------+-----------+
+	| 0-100               |  0.436788874842 |      9492 |
+	| 101-200             |   8.93333333333 |       270 |
+	| 201-300             |    18.523364486 |       107 |
+	| 301-400             |   25.2105263158 |        57 |
+	| 401-500             |   31.7692307692 |        26 |
+	| More than 500       |   85.2708333333 |        48 |
+	+---------------------+-----------------+-----------+
+	
+	
+	Based on the table above, the average number of fans of a user increases with the number 
+	of reviews the user posts. Hence, the number of reviews posted is positively correlated 
+	with the number of fans a user has. 
+	
+
+	
+9. Are there more reviews with the word "love" or with the word "hate" in them?
+
+	Answer: Yes
+	
+	There are 1780 reviews containing the word "love", while there are 232 reviews having the word "hate".
+
+	
+	SQL code used to arrive at answer:
+	
+	SELECT 
+	SUM(CASE WHEN LOWER(text) LIKE '%love%' THEN 1 ELSE 0 END) AS loveCount
+	, SUM(CASE WHEN LOWER(text) LIKE '%hate%' THEN 1 ELSE 0 END) AS hateCount
+	FROM review;
+	
+	Output: 
+	+-----------+-----------+
+	| loveCount | hateCount |
+	+-----------+-----------+
+	|      1780 |       232 |
+	+-----------+-----------+
+
+	
+	
+10. Find the top 10 users with the most fans:
+
+	SQL code used to arrive at answer:
+	
+	SELECT 
+	name
+	, fans
+	FROM user 
+	ORDER BY fans DESC
+	LIMIT 10;
+	
+	Copy and Paste the Result Below:
+
+	+-----------+------+
+	| name      | fans |
+	+-----------+------+
+	| Amy       |  503 |
+	| Mimi      |  497 |
+	| Harald    |  311 |
+	| Gerald    |  253 |
+	| Christine |  173 |
+	| Lisa      |  159 |
+	| Cat       |  133 |
+	| William   |  126 |
+	| Fran      |  124 |
+	| Lissa     |  120 |
+	+-----------+------+
+		
+
+Part 2: Inferences and Analysis
+
+1. Pick one city and category of your choice and group the businesses in that city or category by their overall star rating.
+Compare the businesses with 2-3 stars to the businesses with 4-5 stars and answer the following questions. Include your code.
+
+I chose 'Las Vegas' city and 'Shopping' category. 
+
+i. Do the two groups you chose to analyze have a different distribution of hours?
+Yes, businesses rated with 4-5 stars operate on weekdays 8:00-16:30 or 8:00-17:00, and on weekends 8:00 - 16:30.
+Meanwhile, businesses rated with 2-3 stars have longer operating hours, 8:00 to 22:00 everyday. 
+
+
+SQL Code used for analysis:
+
+	SELECT DISTINCT																						
+	h.hours
+	, SUM(CASE WHEN b.stars >= 2 AND b.stars <= 3 THEN 1 ELSE 0 END) AS '2-3 stars'
+	, SUM (CASE WHEN b.stars >= 4 AND b.stars <= 5 THEN 1 ELSE 0 END) AS '4-5 stars'
+	FROM business b
+	LEFT JOIN category c ON b.id = c.business_id
+	LEFT JOIN hours h ON b.id = h.business_id
+	WHERE b.city = 'Las Vegas' AND c.category = 'Shopping'
+	GROUP BY h.hours;
+
+
+Output:
+
+	+-----------------------+-----------+-----------+
+	| hours                 | 2-3 stars | 4-5 stars |
+	+-----------------------+-----------+-----------+
+	| Friday|10:00-16:00    |         0 |         0 |
+	| Friday|8:00-16:30     |         0 |         1 |
+	| Friday|8:00-17:00     |         0 |         1 |
+	| Friday|8:00-22:00     |         1 |         0 |
+	| Monday|10:00-16:00    |         0 |         0 |
+	| Monday|8:00-16:30     |         0 |         1 |
+	| Monday|8:00-17:00     |         0 |         1 |
+	| Monday|8:00-22:00     |         1 |         0 |
+	| Saturday|10:00-16:00  |         0 |         0 |
+	| Saturday|8:00-16:30   |         0 |         1 |
+	| Saturday|8:00-22:00   |         1 |         0 |
+	| Sunday|8:00-16:30     |         0 |         1 |
+	| Sunday|8:00-22:00     |         1 |         0 |
+	| Thursday|10:00-19:00  |         0 |         0 |
+	| Thursday|8:00-16:30   |         0 |         1 |
+	| Thursday|8:00-17:00   |         0 |         1 |
+	| Thursday|8:00-22:00   |         1 |         0 |
+	| Tuesday|10:00-19:00   |         0 |         0 |
+	| Tuesday|8:00-16:30    |         0 |         1 |
+	| Tuesday|8:00-17:00    |         0 |         1 |
+	| Tuesday|8:00-22:00    |         1 |         0 |
+	| Wednesday|10:00-16:00 |         0 |         0 |
+	| Wednesday|8:00-16:30  |         0 |         1 |
+	| Wednesday|8:00-17:00  |         0 |         1 |
+	| Wednesday|8:00-22:00  |         1 |         0 |
+	+-----------------------+-----------+-----------+
+
+
+ii. Do the two groups you chose to analyze have a different number of reviews?
+
+Yes, the group with 4-5 stars have a total of 36 reviews while the other group has only 6 reviews. 
+
+SQL Code used for analysis:
+
+	SELECT 
+	CASE 
+		WHEN b.stars >= 2 AND b.stars <= 3 THEN '2-3 stars'
+		WHEN b.stars >= 4 AND b.stars <= 5 THEN '4-5 stars'
+		ELSE 'Other'
+		END starCategory
+	, SUM(DISTINCT b.review_count) AS reviewCount
+	FROM business b
+	LEFT JOIN category c ON b.id = c.business_id
+	WHERE b.city = 'Las Vegas' AND c.category = 'Shopping'
+	GROUP BY starCategory
+	HAVING starCategory <> 'Other';
+
+
+Output:
+
+	+--------------+-------------+
+	| starCategory | reviewCount |
+	+--------------+-------------+
+	| 2-3 stars    |           6 |
+	| 4-5 stars    |          36 |
+	+--------------+-------------+
+	
+
+         
+         
+iii. Are you able to infer anything from the location data provided between these two groups? Explain.
+
+There are two businesses in Los Angeles which have 4-5 stars in the Shopping category. These are located 
+in postal codes 89118 and 89161. Meanwhile, one business in Los Angeles that has a 2-3 star rating in the
+Shopping category. It is located in postal code 89121 in Los Angeles. 
+
+
+SQL code used for analysis:
+
+	SELECT DISTINCT																						
+	b.postal_code
+	, SUM(CASE WHEN b.stars >= 2 AND b.stars <= 3 THEN 1 ELSE 0 END) AS '2-3 stars'
+	, SUM (CASE WHEN b.stars >= 4 AND b.stars <= 5 THEN 1 ELSE 0 END) AS '4-5 stars'
+	FROM business b
+	LEFT JOIN category c ON b.id = c.business_id
+	WHERE b.city = 'Las Vegas' AND c.category = 'Shopping'
+	GROUP BY b.postal_code;
+
+Output: 
+
+	+-------------+-----------+-----------+
+	| postal_code | 2-3 stars | 4-5 stars |
+	+-------------+-----------+-----------+
+	| 89118       |         0 |         1 |
+	| 89121       |         1 |         0 |
+	| 89161       |         0 |         1 |
+	+-------------+-----------+-----------+
+
+
+
+		
+		
+2. Group business based on the ones that are open and the ones that are closed.
+What differences can you find between the ones that are still open and the ones that are closed? List at least two differences and the SQL code you used to arrive at your answer.
+
+	1520 businesses that are closed, while 8480 businesses are open. 
+		
+i. Difference 1: Businesses that are still open have a higher number of reviews (269,300) than businesses that are closed (35,251). 
+
+SQL Code:
+
+	SELECT 
+	is_open
+	, COUNT(DISTINCT id) AS countOfId
+	, SUM(review_count) AS totalReviews
+	FROM business b
+	GROUP BY is_open;
+	
+Output: 
+
+	+---------+-----------+--------------+
+	| is_open | countOfId | totalReviews |
+	+---------+-----------+--------------+
+	|       0 |      1520 |        35261 |
+	|       1 |      8480 |       269300 |
+	+---------+-----------+--------------+
+         
+         
+ii. Difference 2: On average, businesses that are still open have a higher average rating (3.68) than businesses that are closed (3.52).
+
+SQL Code used for analysis:
+
+	SELECT 
+	is_open
+	, COUNT(DISTINCT id) AS countOfId
+	, AVG(stars) AS avgRating 
+	FROM business b
+	GROUP BY is_open;
+         
+Output:
+
+	+---------+-----------+---------------+
+	| is_open | countOfId |     avgRating |
+	+---------+-----------+---------------+
+	|       0 |      1520 | 3.52039473684 |
+	|       1 |      8480 | 3.67900943396 |
+	+---------+-----------+---------------+
+
+	
+	
+3. For this last part of your analysis, you are going to choose the type of analysis you want to conduct on the Yelp dataset and are going to prepare the data for analysis.
+
+Ideas for analysis include: Parsing out keywords and business attributes for sentiment analysis, clustering businesses to find commonalities or anomalies between them, 
+predicting the overall star rating for a business, predicting the number of fans a user will have, and so on. These are just a few examples to get you started, 
+so feel free to be creative and come up with your own problem you want to solve. Provide answers, in-line, to all of the following:
+	
+i. Indicate the type of analysis you chose to do: Predicting whether a business will close or not 
+         
+         
+ii. Write 1-2 brief paragraphs on the type of data you will need for your analysis and why you chose that data:
+
+	The analysis will be done at a business level. The training data would be comprised of the target variable being 'is_open'. 
+	The independent variables include the following: 
+	
+		1. 'business' table: city, review_count, stars
+		
+		Aside: Exploratory Data Analysis
+			
+			A. City																				
+			SELECT DISTINCT																						
+			b.city
+			, SUM(CASE WHEN is_open = 1 THEN 1 ELSE 0 END) AS OpenBusinesses
+			, SUM (CASE WHEN is_open = 0 THEN 1 ELSE 0 END) AS ClosedBusinesses
+			FROM business b
+			GROUP BY b.city
+			ORDER BY OpenBusinesses ASC;
+			
+			+------------------+----------------+------------------+
+			| city             | OpenBusinesses | ClosedBusinesses |
+			+------------------+----------------+------------------+
+			| Brooklin         |              0 |                1 |
+			| DeForest         |              0 |                1 |
+			| Dormont          |              0 |                1 |
+			| Firth of Forth   |              0 |                1 |
+			| Glenshaw         |              0 |                1 |
+			| Haddington       |              0 |                1 |
+			| L'ile-Perrot     |              0 |                1 |
+			| Middleburg Hts   |              0 |                1 |
+			| Oakwood Village  |              0 |                1 |
+			| Outremont        |              0 |                2 |
+			| Repentigny       |              0 |                1 |
+			| Aberdour         |              1 |                0 |
+			| Ahwahtukee       |              1 |                0 |
+			| Amherst          |              1 |                0 |
+			| Anthem           |              1 |                2 |
+			| Aspinwall        |              1 |                1 |
+			| Berry            |              1 |                0 |
+			| Black Earth      |              1 |                1 |
+			| Blainville       |              1 |                0 |
+			| Boisbriand       |              1 |                0 |
+			| Bolton           |              1 |                0 |
+			| Braddock         |              1 |                0 |
+			| Bradford         |              1 |                0 |
+			| Broadlands       |              1 |                0 |
+			| Brooklyn Heights |              1 |                0 |
+			+------------------+----------------+------------------+
+			(Output limit exceeded, 25 of 362 total rows shown)
+			
+			
+			Based on the output above, there are certain cities that could where all businesses are already closed. These cities could have high 
+			discriminating power and be able to classify whether a new 	business will have a high likelihood of closing. This variable was also 
+			chosen because the geographical location of a business may impact its profitability, as the demand and purchasing power of consumers
+			per city could vary. 
+
+			B. review_count and stars
+		
+			SELECT 
+			is_open
+			, COUNT(DISTINCT id) AS countOfId
+			, SUM(review_count) AS totalReviews
+			, AVG(stars) AS avgStars
+			FROM business b
+			GROUP BY is_open;
+						
+						
+			+---------+-----------+--------------+---------------+
+			| is_open | countOfId | totalReviews |      avgStars |
+			+---------+-----------+--------------+---------------+
+			|       0 |      1520 |        35261 | 3.52039473684 |
+			|       1 |      8480 |       269300 | 3.67900943396 |
+			+---------+-----------+--------------+---------------+
+			
+			Based on the above, the total number of reviews is significantly higher for open businesses. Meanwhile, open and closed businesses have
+			almost similar average star rating. However, the average number of stars for open businesses is slightly higher. These variables are chosen
+			because they indicate the level of engagement a business has on the Yelp platform. 
+		
+		
+		2. 'category' table: category (Note: LEFT join 'category' table on business table based on business_id)
+		
+		This feature was included based on the hypothesis that there are business categories that are more in-demand than others. 
+		The table below shows that 'Restaurant', 'Nightlife', and 'Bars' categories have the most number of closed businesses. 
+		
+		Aside: Exploratory Data Analysis
+		
+			SELECT 
+			DISTINCT
+			c.category
+			, SUM(CASE WHEN is_open = 1 THEN 1 ELSE 0 END) AS OpenBusinesses
+			, SUM (CASE WHEN is_open = 0 THEN 1 ELSE 0 END) AS ClosedBusinesses
+			FROM business b
+			LEFT JOIN category c ON b.id = c.business_id
+			GROUP BY c.category
+			HAVING c.category <> 'None'
+			ORDER BY ClosedBusinesses DESC;
+			
+			+---------------------------+----------------+------------------+
+			| category                  | OpenBusinesses | ClosedBusinesses |
+			+---------------------------+----------------+------------------+
+			| Restaurants               |             53 |               18 |
+			| Nightlife                 |             12 |                8 |
+			| Bars                      |             11 |                6 |
+			| Shopping                  |             25 |                5 |
+			| American (New)            |              3 |                3 |
+			| American (Traditional)    |              8 |                3 |
+			| Event Planning & Services |              3 |                3 |
+			| Food                      |             20 |                3 |
+			| Desserts                  |              1 |                2 |
+			| Gluten-Free               |              0 |                2 |
+			| Italian                   |              0 |                2 |
+			| Japanese                  |              3 |                2 |
+			| Local Services            |             10 |                2 |
+			| Mexican                   |              5 |                2 |
+			| Pizza                     |              2 |                2 |
+			| Sandwiches                |              6 |                2 |
+			| Specialty Food            |              3 |                2 |
+			| Venues & Event Spaces     |              0 |                2 |
+			| Bakeries                  |              4 |                1 |
+			| Beauty & Spas             |             12 |                1 |
+			| Beer                      |              1 |                1 |
+			| Breakfast & Brunch        |              3 |                1 |
+			| Burgers                   |              7 |                1 |
+			| Carpet Cleaning           |              2 |                1 |
+			| Carpet Installation       |              0 |                1 |
+			+---------------------------+----------------+------------------+
+			(Output limit exceeded, 25 of 257 total rows shown)
+		
+		
+		
+		3. 'checkin' table: count (Note: LEFT join 'checkin' table on business table based on business_id)
+		This feature was included as an indicator of the business's activity. The table below shows that the number of 
+		check-ins for open businesses are higher than for closed businesses.
+		
+		Aside: Exploratory Data Analysis
+		
+			SELECT
+			b.is_open
+			, SUM(ch.count) AS TotalCheckin
+			FROM business b
+			LEFT JOIN checkin ch ON b.id = ch.business_id
+			WHERE ch.count <> 'None'
+			GROUP BY b.is_open;
+			
+			+---------+--------------+
+			| is_open | TotalCheckin |
+			+---------+--------------+
+			|       0 |           15 |
+			|       1 |          823 |
+			+---------+--------------+
+		
+		4. 'review' table: count of useful reviews, count of funny reviews, count of cool reviews, average stars per review (Note: LEFT join 'review' table on business table based on business_id)
+		
+		These features were included based on the hypothesis that the type of reviews could impact a business's performance. 
+		The table below shows that open businesses have more useful, funny, and cool reviews than their closed counterparts. 
+		The average stars per review is also slightly higher for open businesses. 
+		
+		Aside: Exploratory Data Analysis
+		
+		SELECT 
+		b.is_open
+		, COUNT(DISTINCT r.useful) AS usefulReviewsCount
+		, COUNT(DISTINCT r.funny) AS funnyReviewsCount
+		, COUNT(DISTINCT r.cool) AS coolReviewsCount
+		, AVG(r.stars) AS avgReviewStars
+		FROM business b
+		LEFT JOIN review r ON b.id = r.business_id
+		GROUP BY b.is_open
+		ORDER BY avgReviewStars DESC
+		
+		
+		+---------+--------------------+-------------------+------------------+----------------+
+		| is_open | usefulReviewsCount | funnyReviewsCount | coolReviewsCount | avgReviewStars |
+		+---------+--------------------+-------------------+------------------+----------------+
+		|       1 |                 12 |                 8 |               10 |   3.7610619469 |
+		|       0 |                  7 |                 4 |                5 |  3.64788732394 |
+		+---------+--------------------+-------------------+------------------+----------------+
+		
+		
+	The finished dataset would be used to train a logistic regression model, which could predict the likelihood of a business to close or not. 	
+	
+                       
+                  
+iii. Output of your finished dataset:
+        
++------------------------+----------------------------------------------------+---------+------------+--------------+-------+--------------------+-------------------+------------------+----------------+----------+--------------+
+| id                     | name                                               | is_open | city       | review_count | stars | usefulReviewsCount | funnyReviewsCount | coolReviewsCount | avgReviewStars | category | checkinCount |
++------------------------+----------------------------------------------------+---------+------------+--------------+-------+--------------------+-------------------+------------------+----------------+----------+--------------+
+| -050d_XIor1NpCuWkbIVaQ | Matt's Big Breakfast                               |       0 | Phoenix    |          700 |   4.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -2uhc4spgMqJMy0YSxConA | Alamo Rent A Car                                   |       1 | Mesa       |           18 |   4.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -38Kck4mGlkBwd6OXayZRg | Now and Zen Massage Therapy                        |       1 | Las Vegas  |           32 |   5.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -3QHAylnVB-vNmCg2Rf5aw | I'm Board! Games & Family Fun                      |       1 | Middleton  |           19 |   5.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -5L8zOxibac-vBrsYtxXbQ | Ed's Tavern                                        |       1 | Charlotte  |           95 |   3.5 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -5NXoZeGBdx3Bdk70tuyCw | Po' Boys Restaurant                                |       1 | Urbana     |           54 |   4.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -5TBEK1ddM41v_gqGm5oyw | Torontoism - Sotheby's International Realty Canada |       1 | Toronto    |            7 |   5.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -7PX_FOoCwktlunImRyZdg | Pizza Taglio                                       |       1 | Pittsburgh |           93 |   4.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -8QlV3b_9H4BAh6LgMIr1g | Nandini Indian Cuisine                             |       1 | Tempe      |          406 |   4.5 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -8ZiMXZReeTD3kwEvS0Lww | The Butcher Block                                  |       1 | Las Vegas  |          106 |   4.5 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -95mbLJsa0CxXhpaNL4LvA | The Perfect Scoop & Boba Tea                       |       1 | Las Vegas  |          564 |   3.5 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -9nai28tnoylwViuJVrYEQ | Tapas Papa Frita                                   |       1 | Scottsdale |          391 |   3.5 |                  2 |                 1 |                1 |            5.0 |     None |         None |
+| -BJVR_DO5r-MfQ2tiszeOg | Results Only                                       |       1 | Phoenix    |            7 |   5.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -Exy3mLCqzh-MMIqeuJ4Tg | Jamba Juice                                        |       1 | Phoenix    |           14 |   4.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -F-hHAOj55_KGCh4-ZfnCg | Princes Street                                     |       1 | Edinburgh  |          114 |   4.5 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -FtngCwHCD2tRlH8jpj_Ag | Hash House A Go Go                                 |       1 | Henderson  |          458 |   3.5 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -Gy0BAMgRN4sGlY7theqxQ | MOD Pizza                                          |       1 | Tempe      |           77 |   4.5 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -L7W3egf0xOyT2oZQBLulQ | Cohen Joel G, MD                                   |       1 | Scottsdale |            6 |   3.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -L88B-PrtzwujhLuYc2k_g | Joe Badali's Ristorante Italiano & Bar             |       1 | Toronto    |           99 |   3.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -Levln3VcfeXS4iHt5ct9A | Nozy                                               |       1 | Montreal   |           43 |   4.5 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -MC7EFxTsyKMKB3zeP_FIQ | Stownut Donut & Diner                              |       1 | Stow       |           59 |   4.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -Ma5JqzuI_3xIAtpNJfQ2g | Krachai Thai Kitchen                               |       1 | Phoenix    |          149 |   4.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -N_agk8RUHvHk3GVDsyunQ | Hitchin Post Saloon & Steakhouse                   |       1 | Las Vegas  |           47 |   4.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -P5dJdIFkT2cUmJZZFmahw | Sportbike Performance Center - AzSportbikeRentals  |       1 | Phoenix    |           13 |   4.5 |                  1 |                 1 |                1 |            5.0 |     None |         None |
+| -Pygv7Booqt_gtLX9bkoIQ | Marco & Wimmer                                     |       1 | Mesa       |            4 |   5.0 |                  1 |                 1 |                1 |            5.0 |     None |         None |
++------------------------+----------------------------------------------------+---------+------------+--------------+-------+--------------------+-------------------+------------------+----------------+----------+--------------+
+(Output limit exceeded, 25 of 10000 total rows shown)
+
+     
+iv. Provide the SQL code you used to create your final dataset:
+
+	SELECT DISTINCT
+	b.id
+	, b.name
+	, b.is_open
+	, b.city
+	, b.review_count
+	, b.stars
+	, COUNT(DISTINCT r.useful) AS usefulReviewsCount
+	, COUNT(DISTINCT r.funny) AS funnyReviewsCount
+	, COUNT(DISTINCT r.cool) AS coolReviewsCount
+	, AVG(r.stars) AS avgReviewStars
+	, c.category
+	, ch.count AS checkinCount
+	FROM business b
+	LEFT JOIN review r ON b.id = r.business_id
+	LEFT JOIN category c ON b.id = c.business_id
+	LEFT JOIN checkin ch ON b.id = ch.business_id
+	GROUP BY b.id
+	ORDER BY avgReviewStars DESC , checkinCount, category
